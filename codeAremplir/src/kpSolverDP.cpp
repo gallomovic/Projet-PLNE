@@ -15,30 +15,30 @@ void KpSolverDP::setVerboseMode(bool verbosemode){
 }
 
 void KpSolverDP::solve() {
-	if (verboseMode) cout << "create  DP matrix " << endl;
+	if (verboseMode) cout << "-> create  DP matrix " << endl;
 	createMatrixDP();
-	if (verboseMode) cout << " DP matrix created " << endl;
-	if (verboseMode) cout << "fill first column DP matrix " << endl;
+	if (verboseMode) cout << " DP matrix created. " << endl;
+	if (verboseMode) cout << "-> fill first column DP matrix " << endl;
 	fillFirstColumnDP();
-	if (verboseMode) cout << "first column DP matrix filled" << endl;
+	if (verboseMode) cout << "first column DP matrix filled." << endl;
 
-	if (verboseMode) cout << "fill  DP matrix : " << endl;
+	if (verboseMode) cout << "-> fill  DP matrix : " << endl;
 
 	if (memoizedVersion) costSolution = solveMemoized(nbItems-1,knapsackBound);
 	else solveIter();
 
-	if (verboseMode) cout << " DP matrix filled: " << endl;
+	if (verboseMode) cout << " DP matrix filled. " << endl;
 	upperBoundOPT = costSolution ;
 	if (verboseMode) cout << "solution cost by DP: "  << costSolution << endl;
 	if (verboseMode) cout << "print DP matrix :" << endl;
 	if (verboseMode) printMatrixDP();
 	if (verboseMode) cout << "backtrack operations:" << endl;
 	backtrack();
-	if (verboseMode) cout << "backtrack operations achieved:" << endl;
+	if (verboseMode) cout << "backtrack operations achieved." << endl;
 
-	if (verboseMode) cout << "delete DP matrix : " << endl;
+	if (verboseMode) cout << "-> delete DP matrix : " << endl;
 	deleteMatrixDP();
-	if (verboseMode) cout << "DP matrix deleted: " << endl;
+	if (verboseMode) cout << "DP matrix deleted. " << endl;
 }
 
 void KpSolverDP::createMatrixDP(){
@@ -67,22 +67,17 @@ void KpSolverDP::fillFirstColumnDP(){
 
 void KpSolverDP::solveIter() {
 	//TODO
-	for (int j=0; j <= knapsackBound; j++){
-		matrixDP[0][j] = 0;
-	}
-    
-	for (int i=0; i < nbItems; i++){
-		for (int j=0; j <= knapsackBound; j++){
-			if (weights[i] > j){
-				matrixDP[i][j] = matrixDP[i-1][j];
-			}
-			else {
-				matrixDP[i][j] = max( matrixDP[i-1][j], matrixDP[i-1][j-weights[i]] + values[i] );
-				
+
+	for (int i=1; i <= nbItems-1; i++){
+		for (int m=1; m <= knapsackBound; m++){
+			matrixDP[i][m] = matrixDP[i-1][m];
+			if (m >= weights[i]){
+				matrixDP[i][m] = max( matrixDP[i][m], matrixDP[i-1][m-weights[i]] + values[i] );
 			}
 		}
 	}
-	printMatrixDP();
+	costSolution = matrixDP[nbItems-1][knapsackBound];
+	
 }
 
 
@@ -97,8 +92,22 @@ int KpSolverDP::solveMemoized(int i , int m) {
 }
 
 void KpSolverDP::backtrack() {
-
 	//TODO
+	int m = knapsackBound;
+	
+	for (int i=1; i<=nbItems; i++){
+		solution.push_back(false);
+	}
+
+	for (int n = nbItems-1; n >= 1; n=n-1){
+		if (matrixDP[n][m] != matrixDP[n-1][m]){
+			solution[n] = true;
+			m = m - weights[n];
+		}
+	}
+
+	if (m >= weights[0]) solution[0] = true;
+	
 }
 
 void KpSolverDP::printMatrixDP() {

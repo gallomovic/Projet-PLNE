@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
     KpSolverGreedy kpGreedy;
     kpGreedy.importInstance(instanceFile);
 
-    //if (verboseMode) 
+    if (verboseMode) 
     kpGreedy.printKnapsackInstance();
 
     cout  << endl << "Greedy bounds :"  << endl << endl;
@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
     kpGreedy.printKnapsackSolution(verboseMode);
 
     kpGreedy.extractSubInstance(0,10);
-    //if (verboseMode) 
+    if (verboseMode) 
     kpGreedy.printKnapsackInstance();
 
 
